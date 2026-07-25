@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BM Solicitor Chatbot — Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#13151f; --gold:#c9a96e; --muted:#98a0b3; --panel:#0b1118; --accent:#0f172a; }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#fff}
+
+    /* Floating button */
+    .bm-launcher{position:fixed;right:22px;bottom:22px;z-index:9999}
+    .bm-btn{width:66px;height:66px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--gold),#a07840);display:grid;place-items:center;cursor:pointer;box-shadow:0 14px 40px rgba(0,0,0,.6);position:relative;overflow:visible}
+    .bm-btn:focus{outline:2px solid rgba(201,169,110,.16)}
+    .bm-btn .icon{width:30px;height:30px;display:block}
+    /* pulse ring */
+    .bm-btn::before{content:'';position:absolute;inset:0;border-radius:50%;background:rgba(201,169,110,0.22);animation:pulse 2s ease-out infinite;z-index:-1}
+    @keyframes pulse{0%{transform:scale(1);opacity:1}100%{transform:scale(1.7);opacity:0}}
+    /* notification dot */
+    .notif{position:absolute;top:6px;right:6px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid var(--bg);animation:blink 1.4s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* Chat card */
+    .bm-panel{position:fixed;right:22px;bottom:100px;width:370px;max-width:calc(100vw - 28px);height:560px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,var(--panel),#07111a);box-shadow:0 30px 80px rgba(0,0,0,.65);border:1px solid rgba(201,169,110,0.06);transform:scale(.9) translateY(20px);opacity:0;pointer-events:none;transition:all .28s cubic-bezier(.2,.9,.2,1);transform-origin:bottom right;z-index:9998}
+    .bm-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
+    .bm-panel .head{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(90deg, rgba(0,0,0,0.12), transparent);border-bottom:1px solid rgba(255,255,255,0.02)}
+    .bm-logo{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#0f2b58,#1e3a8a);border:2px solid rgba(201,169,110,0.12)}
+    .bm-logo svg{width:34px;height:34px}
+    .bm-title{flex:1}
+    .bm-title strong{display:block;font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);line-height:1}
+    .bm-title span{display:block;color:var(--muted);font-size:.78rem;margin-top:4px}
+    .bm-whatsapp{width:44px;height:44px;border-radius:10px;background:#25d366;display:grid;place-items:center}
+
+    /* quick chips */
+    .chips{display:flex;gap:8px;padding:10px 12px 0;flex-wrap:wrap}
+    .chip{background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.18);color:var(--gold);padding:6px 12px;border-radius:18px;font-size:.82rem;cursor:pointer;font-weight:600}
+    .chip:hover{transform:translateY(-2px);background:rgba(201,169,110,0.14)}
+
+    /* messages area */
+    .body{display:flex;flex-direction:column;height:calc(100% - 190px);padding:12px 12px 8px;gap:12px;overflow:hidden}
+    .msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:6px}
+    .msgs::-webkit-scrollbar{width:8px}
+    .msgs::-webkit-scrollbar-track{background:transparent}
+    .msgs::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(201,169,110,0.12),rgba(201,169,110,0.28));border-radius:8px}
+
+    .row{display:flex;gap:10px;align-items:flex-end}
+    .row.user{justify-content:flex-end}
+    .avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700}
+    .avatar.bot{background:linear-gradient(135deg,var(--gold),#b07b3b);color:#071322}
+    .avatar.user{background:rgba(255,255,255,0.04);color:var(--muted)}
+
+    .bubble{max-width:78%;padding:12px 14px;border-radius:14px;font-size:.95rem;line-height:1.4}
+    .bubble.bot{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.04);color:#e6eef8}
+    .bubble.user{background:linear-gradient(135deg,var(--gold),#a07840);color:#071322;box-shadow:0 10px 30px rgba(16,45,120,0.25)}
+
+    .ts{font-size:.68rem;color:var(--muted);margin-top:6px;text-align:right}
+
+    /* options area (bot-led list on left) */
+    .options{padding:10px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.02)}
+    .options-row{display:flex;gap:12px;align-items:flex-start}
+    .options-list{display:flex;flex-direction:column;gap:8px}
+    .opt{background:#0d2546;color:var(--gold);border:none;padding:10px 12px;border-radius:12px;cursor:pointer;text-align:left;font-weight:700}
+    .opt:hover{background:#123260}
+
+    /* typing */
+    .typing{display:inline-flex;gap:6px;align-items:center}
+    .dot{width:8px;height:8px;background:var(--gold);border-radius:50%;animation:jump .9s infinite}
+    .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}
+    @keyframes jump{0%{transform:translateY(0)}30%{transform:translateY(-6px)}60%{transform:translateY(0)}100%{transform:translateY(0)} }
+
+    /* footer */
+    .foot{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,0.02);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02))}
+    .input{flex:1;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);color:#e6eef8;min-height:42px;resize:none}
+    .send{background:var(--gold);border:none;padding:10px 14px;border-radius:10px;color:#071322;font-weight:800;cursor:pointer}
+
+    /* responsive */
+    @media(max-width:420px){.bm-panel{right:12px;bottom:90px;width:calc(100vw - 24px);height:86vh;border-radius:16px}.bm-btn{right:12px;bottom:12px}}
+  </style>
+</head>
+<body>
+
+<!-- Launcher -->
+<div class="bm-launcher">
+  <button class="bm-btn" id="launch" aria-label="Chat with BM Solicitors">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M3 21c3-4 7-6 9-6s6 2 9 6"/></svg>
+    <div class="notif" id="notif"></div>
+  </button>
+</div>
+
+<!-- Panel -->
+<div class="bm-panel" id="panel" aria-hidden="true" role="dialog" aria-label="BM Solicitors Chat">
+  <div class="head">
+    <div class="bm-logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="30" fill="none" stroke="#bfc9d9" stroke-width="1.6"/><text x="32" y="38" text-anchor="middle" font-family="Playfair Display, serif" font-weight="700" font-size="18" fill="#e6d7b0">BM</text></svg>
+    </div>
+    <div class="bm-title">
+      <strong>BM Solicitor (Private) Limited</strong>
+      <span>BM Solicitors' Support — Ask a question</span>
+    </div>
+    <div title="Online" style="display:flex;align-items:center;gap:8px">
+      <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+    </div>
+    <a class="bm-whatsapp" href="https://wa.me/03247800007" target="_blank" rel="noreferrer noopener" title="Chat on WhatsApp">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M20.5 3.5A10 10 0 1 0 12 22v-3a7.5 7.5 0 1 1 7.5-7.5h3A10 10 0 0 0 20.5 3.5z" opacity=".0"/><path d="M17.2 14.1c-.4-.1-2.5-1.2-2.8-1.3-.4-.1-.6-.1-.9.1-.3.2-1.2.9-1.5 1.1-.3.2-.5.2-.9 0s-1.1-.4-2.1-1.3c-.8-.8-1.3-1.9-1.5-2.6-.2-.6 0-1 .3-1.2.2-.1.6-.2.9-.2.3 0 .6 0 .9 0 .3 0 .9-.3 1.5-.3.6 0 1.1.1 1.6.2.5.1 1.1.5 1.2.6.2.2.3.5.1.8-.2.3-.7.9-.9 1.2-.2.3-.3.5 0 .9.3.4 1.2 1.7 2.8 2.4.7.3 1.1.3 1.4.2.2-.1.7-.3 1-.6.3-.3.6-.6.8-.8.2-.2.2-.5.1-.7-.1-.2-.3-.3-.7-.4z"/></svg>
+    </a>
+  </div>
+
+  <div class="chips" id="chips">
+    <div class="chip" data-val="What services do you provide?">Services</div>
+    <div class="chip" data-val="How to book a consultation?">Consultancy</div>
+    <div class="chip" data-val="Contact">Contact</div>
+    <div class="chip" data-val="About BM Solicitor">About</div>
+  </div>
+
+  <div class="body">
+    <div class="msgs" id="msgs">
+      <div class="row bot">
+        <div class="avatar bot">BM</div>
+        <div>
+          <div class="bubble bot">Welcome to BM Solicitor (Private) Limited. Choose a topic or type your question below.</div>
+          <div class="ts" id="ts0"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="options" id="options"></div>
+  </div>
+
+  <div class="foot">
+    <textarea id="input" class="input" placeholder="Type a custom question (optional)" rows="1"></textarea>
+    <button id="send" class="send">Send</button>
+  </div>
+</div>
+
+<script>
+/*
+  BM Chatbot single-file implementation.
+  NOTE: Direct browser calls to Anthropic will require your API key and may be blocked by CORS.
+  Options:
+    - Set up a simple server-side proxy to call Anthropic (recommended).
+    - For quick local tests, set USE_MOCK = true to see simulated replies.
+*/
+
+const USE_PROXY = false; // set true if using server proxy endpoint
+const PROXY_URL = 'https://your-proxy.example.com/anthropic'; // if using proxy, POST {message}
+const ANTHROPIC_API_KEY = ''; // If you try direct call (may be blocked) place your key here
+const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'claude-sonnet-4-20250514';
+const USE_MOCK = true; // set false to attempt real API calls (beware of CORS & key exposure)
+
+const SYSTEM_PROMPT = `You are a professional assistant for BM Solicitor (Private) Limited, Punjab, Pakistan.\nServices: Consultancy, Strategic Planning, Project Management, Institutional Development, Capacity Building, Green Energy, IT Support.\nDo NOT discuss: banking, MLM, Ponzi schemes, forex, insurance, stock brokerage.\nTone: professional, concise, warm. Keep answers short (2-4 lines).`;
+
+// Decision tree
+const initialOptions = [
+  'What services do you provide?',
+  'How to book a consultation?',
+  'Do you handle property disputes?',
+  'What are your fees?',
+  'Can you advise on contracts?',
+  'How do I start a claim?'
+];
+
+const flow = {
+  'What services do you provide?': { reply:'We provide consultancy, project management, institutional development, green energy advisory, and IT support. Which area interests you?', options:['Property','Corporate','Family','Back to menu'] },
+  'How to book a consultation?': { reply:'You may book via our website or WhatsApp; we can arrange in-person or online meetings.', options:['Book via WhatsApp','Schedule online','Back to menu'] },
+  'Do you handle property disputes?': { reply:'Yes — we handle title issues, settlements and litigation related to property.', options:['Document checklist','Timeline expectations','Back to menu'] },
+  'What are your fees?': { reply:'Fees depend on case complexity; a short consultation helps us provide an estimate.', options:['Consultation fee','Estimate range','Back to menu'] },
+  'Can you advise on contracts?': { reply:'Yes — we draft and review commercial and employment contracts.', options:['Draft a contract','Review a contract','Back to menu'] },
+  'How do I start a claim?': { reply:'Gather relevant documents and contact us for a case review; we will prepare next steps.', options:['Document checklist','How long it takes','Back to menu'] },
+  'Back to menu': { reply:'Returning to main topics.', options: initialOptions }
+};
+
+// Elements
+const panel = document.getElementById('panel');
+const launch = document.getElementById('launch');
+const msgs = document.getElementById('msgs');
+const optionsEl = document.getElementById('options');
+const input = document.getElementById('input');
+const send = document.getElementById('send');
+const chips = document.getElementById('chips');
+
+let history = [];
+let panelOpen = false;
+
+launch.addEventListener('click', ()=>{
+  panelOpen = !panelOpen; panel.classList.toggle('open', panelOpen);
+  if(panelOpen) document.getElementById('notif').style.display='none';
+});
+
+chips.addEventListener('click', (e)=>{
+  const t = e.target.closest('.chip'); if(!t) return; const val = t.dataset.val; handleUserChoice(val);
+});
+
+send.addEventListener('click', ()=>{
+  const txt = input.value.trim(); if(!txt) return; input.value=''; handleUserChoice(txt, true);
+});
+
+input.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send.click(); }});
+
+function appendMessage(who, text, skipTs){
+  const row = document.createElement('div'); row.className = 'row ' + (who==='user'?'user':'bot');
+  const av = document.createElement('div'); av.className = 'avatar ' + (who==='user'?'user':'bot'); av.textContent = who==='user'?'You':'BM';
+  const cont = document.createElement('div');
+  const b = document.createElement('div'); b.className = 'bubble ' + (who==='user'?'user':'bot'); b.innerHTML = escapeHtml(text).replace(/\n/g,'<br>');
+  const ts = document.createElement('div'); ts.className='ts'; ts.textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  cont.appendChild(b); if(!skipTs) cont.appendChild(ts);
+  row.appendChild(av); row.appendChild(cont); msgs.appendChild(row); msgs.scrollTop = msgs.scrollHeight; return row;
+}
+
+function showOptions(list){
+  optionsEl.innerHTML='';
+  const row = document.createElement('div'); row.className='options-row';
+  const av = document.createElement('div'); av.className='avatar bot'; av.textContent='BM';
+  const listWrap = document.createElement('div'); listWrap.className='options-list';
+  list.slice(0,6).forEach(l=>{
+    const btn = document.createElement('button'); btn.className='opt'; btn.textContent = l; btn.onclick = ()=>handleUserChoice(l);
+    listWrap.appendChild(btn);
+  });
+  row.appendChild(av); row.appendChild(listWrap); optionsEl.appendChild(row); optionsEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showTyping(){
+  const div = document.createElement('div'); div.className='row bot typingRow';
+  const av = document.createElement('div'); av.className='avatar bot'; av.textContent='BM';
+  const cont = document.createElement('div'); const b = document.createElement('div'); b.className='bubble bot';
+  const dots = document.createElement('div'); dots.className='typing'; dots.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  b.appendChild(dots); cont.appendChild(b); div.appendChild(av); div.appendChild(cont); msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight; return div;
+}
+function removeTyping(el){ if(el) el.remove(); }
+
+async function handleUserChoice(text, isCustom=false){
+  // hide options
+  optionsEl.innerHTML='';
+  // add user message immediately
+  appendMessage('user', text);
+  history.push({role:'user',content:text});
+
+  // show typing
+  const typingIndicator = showTyping();
+
+  // after 1s realistic delay, get bot reply
+  try{
+    const reply = await getBotReply(text);
+    removeTyping(typingIndicator);
+    appendMessage('bot', reply);
+    history.push({role:'assistant',content:reply});
+    // show next options (from flow) after small delay
+    const next = flow[text] && flow[text].options ? flow[text].options : initialOptions;
+    setTimeout(()=> showOptions(next), 450);
+  }catch(err){
+    removeTyping(typingIndicator);
+    appendMessage('bot','Connection issue. Please try again later.');
+    console.error(err);
+  }
+}
+
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s]); }
+
+async function getBotReply(userText){
+  // Prefer real API if configured; otherwise return mock reply for offline/demo mode
+  if(USE_MOCK){
+    // simple deterministic canned reply based on decision tree
+    const canned = flow[userText] && flow[userText].reply ? flow[userText].reply : `Thanks — we will get back to you about: ${userText}`;
+    // small simulated thinking time
+    await new Promise(r=>setTimeout(r,700));
+    return canned;
+  }
+
+  // Build messages payload for Anthropic chat endpoint
+  const messages = [
+    { role:'system', content: SYSTEM_PROMPT },
+    ...history.map(m=> ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }))
+  ];
+
+  if(USE_PROXY){
+    const res = await fetch(PROXY_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,model:MODEL})});
+    if(!res.ok) throw new Error('Proxy error');
+    const data = await res.json();
+    return data.reply || 'Sorry, no reply';
+  }
+
+  // Direct Anthropic call (may be blocked by CORS; don't expose API key publicly)
+  const res = await fetch(ANTHROPIC_API, {
+    method:'POST', headers:{'Content-Type':'application/json', 'X-API-Key': ANTHROPIC_API_KEY},
+    body: JSON.stringify({model: MODEL, messages})
+  });
+  if(!res.ok) throw new Error('Anthropic API error ' + res.status);
+  const json = await res.json();
+  // depends on API shape — try to extract
+  const reply = json?.content?.[0]?.text || json?.choices?.[0]?.message?.content || json?.completion || '';
+  return reply || 'Sorry, I could not process that.';
+}
+
+// initialize UI
+showOptions(initialOptions);
+
+// expose a short helper to toggle mocked mode from console
+window.BM_CHATBOT = { setMock:(v)=>{ window.USE_MOCK = !!v; }, showOptions };
+</script>
+
+</body>
+</html>

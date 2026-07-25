@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chairman Profile — Syed Shabi ul Hassan Bukhari</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pbZc6X0b6V7hQ6q1u8+6ZzYqO1mQFqQBtQpZfG+8w4vQ5e1mGm3XKc4K1aVv3y5VZsM3cQJZ5h1y5dE2k6zKg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root{--navy:#0A1628;--white:#ffffff;--gold:#C9A84C;--light:#F5F5F5;--muted:#6b7280}
+    *{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:var(--light);color:var(--navy);-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    .container{max-width:1100px;margin:0 auto;padding:28px}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#071026 0%,#0a1630 50%);color:var(--white);padding:72px 20px;border-bottom:6px solid rgba(201,168,76,0.06)}
+    .hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:40px}
+    .hero-text{flex:1}
+    .site-title{font-family:'Playfair Display',serif;font-size:28px;margin:0 0 6px;color:var(--gold);font-weight:700}
+    .name{font-family:'Playfair Display',serif;font-size:44px;margin:0;line-height:1}
+    .role{margin-top:8px;color:rgba(255,255,255,0.85);font-weight:600}
+    .accent-line{width:88px;height:6px;background:linear-gradient(90deg,var(--gold),#b69439);border-radius:6px;margin-top:18px}
+    .hero-actions{margin-top:18px;display:flex;gap:12px}
+    .btn{background:var(--gold);color:var(--navy);padding:10px 16px;border-radius:8px;font-weight:700;border:none;cursor:pointer}
+    .btn.outline{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.12)}
+
+    .hero-photo{width:260px;height:260px;border-radius:16px;overflow:hidden;border:6px solid rgba(201,168,76,0.12);flex-shrink:0}
+    .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center 70%}
+
+    /* Main sections */
+    section{padding:48px 0}
+    h2{font-family:'Playfair Display',serif;color:var(--navy);font-size:26px;margin:0 0 12px}
+    p{color:var(--muted);line-height:1.7}
+
+    .about{background:var(--white);padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(10,22,40,0.04)}
+
+    /* Achievements */
+    .ach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px}
+    .ach{background:var(--white);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(10,22,40,0.04);display:flex;gap:12px;align-items:center;transition:transform .18s, box-shadow .18s}
+    .ach:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(10,22,40,0.08)}
+    .ach .icon{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,rgba(10,22,40,0.08),rgba(201,168,76,0.06));display:grid;place-items:center;font-size:20px;color:var(--navy)}
+    .ach .meta{font-weight:700;color:var(--navy)}
+    .ach .label{color:var(--muted);font-size:14px}
+
+    /* Vision */
+    .vision{background:linear-gradient(180deg,#f8f9fa,#eef2f6);padding:40px;border-radius:12px}
+    .quote{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--navy);margin:0}
+    .signature{margin-top:18px;font-family:'Playfair Display',serif;color:var(--navy);font-weight:700}
+
+    /* Timeline */
+    .timeline{position:relative;padding-left:24px}
+    .timeline::before{content:'';position:absolute;left:20px;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--gold),rgba(201,168,76,0.4));border-radius:4px}
+    .milestone{position:relative;padding:18px 20px 18px 48px;margin-bottom:18px;background:var(--white);border-radius:10px;box-shadow:0 8px 30px rgba(10,22,40,0.04)}
+    .milestone .year{position:absolute;left:-104px;top:18px;width:84px;text-align:right;color:var(--navy);font-weight:700}
+
+    @media(max-width:900px){
+      .hero-inner{flex-direction:column;align-items:flex-start}
+      .hero-photo{width:200px;height:200px;border-radius:12px}
+      .ach-grid{grid-template-columns:repeat(2,1fr)}
+      .milestone .year{left:12px;top:-26px;text-align:left}
+      .timeline{padding-left:12px}
+      .timeline::before{left:12px}
+    }
+
+    @media(max-width:560px){
+      .ach-grid{grid-template-columns:1fr}
+      .hero-photo{width:160px;height:160px}
+      .name{font-size:28px}
+    }
+
+    /* small utility */
+    .muted{color:var(--muted)}
+
+    /* fade-in */
+    .reveal{opacity:0;transform:translateY(12px);transition:all .6s ease-out}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* smooth scroll */
+    html{scroll-behavior:smooth}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner container">
+      <div class="hero-text">
+        <div class="site-title">BM Solicitor (Pvt) Limited</div>
+        <h1 class="name">Syed Shabi ul Hassan Bukhari</h1>
+        <div class="role">Chairman, BM Solicitor (Pvt) Limited</div>
+        <div class="accent-line"></div>
+        <div class="hero-actions">
+          <a class="btn" href="mailto:chairman@bmsolicitors.example">Contact</a>
+          <a class="btn outline" href="#about">About the Chairman</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <img src="imports/chairman.png" alt="Chairman portrait" />
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="about" class="about reveal">
+      <h2>About the Chairman</h2>
+      <p>Syed Shabi ul Hassan Bukhari is the Chairman of BM Solicitor (Private) Limited. With a distinguished career spanning multiple decades, he has led strategic legal advisory and institutional development initiatives across the region. His expertise includes corporate governance, project management, and high-value dispute resolution.</p>
+      <p>Throughout his tenure, he has worked with corporate clients, government entities, and NGOs to deliver pragmatic legal solutions informed by deep sector knowledge. His leadership emphasizes integrity, client-centric delivery, and capacity building.</p>
+    </section>
+
+    <section id="achievements" class="reveal">
+      <h2>Key Achievements</h2>
+      <div class="ach-grid">
+        <div class="ach">
+          <div class="icon"><i class="fa-solid fa-briefcase"></i></div>
+          <div>
+            <div class="meta">30+ Years</div>
+            <div class="label">Legal Experience</div>
+          </div>
+        </div>
+        <div class="ach">
+          <div class="icon"><i class="fa-solid fa-gavel"></i></div>
+          <div>
+            <div class="meta">1000+</div>
+            <div class="label">Cases Advised</div>
+          </div>
+        </div>
+        <div class="ach">
+          <div class="icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <div class="meta">5000+</div>
+            <div class="label">Clients Served</div>
+          </div>
+        </div>
+        <div class="ach">
+          <div class="icon"><i class="fa-solid fa-award"></i></div>
+          <div>
+            <div class="meta">Recognitions</div>
+            <div class="label">Industry Awards</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vision" class="vision reveal" style="margin-top:28px">
+      <div style="max-width:900px;margin:0 auto;text-align:center">
+        <p class="quote">“My vision is to build a practice that combines deep legal expertise with a commitment to ethical service, helping clients achieve sustainable outcomes and strengthening institutional capacity across sectors.”</p>
+        <div class="signature">— Syed Shabi ul Hassan Bukhari</div>
+      </div>
+    </section>
+
+    <section id="timeline" class="reveal">
+      <h2>Career Timeline</h2>
+      <div class="timeline">
+        <div class="milestone">
+          <div class="year">1996</div>
+          <h4>Associate Solicitor — Local Law Firm</h4>
+          <p class="muted">Assisted in corporate and property matters, built foundational litigation experience.</p>
+        </div>
+        <div class="milestone">
+          <div class="year">2005</div>
+          <h4>Senior Partner — Regional Practice</h4>
+          <p class="muted">Led corporate advisory teams and major property dispute resolutions.</p>
+        </div>
+        <div class="milestone">
+          <div class="year">2014</div>
+          <h4>Founder — BM Solicitor (Pvt) Limited</h4>
+          <p class="muted">Established the firm to provide focused consultancy and project advisory services.</p>
+        </div>
+        <div class="milestone">
+          <div class="year">2020</div>
+          <h4>Chairman — BM Solicitor</h4>
+          <p class="muted">Oversee strategic direction, client relationships and institutional partnerships.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="reveal" style="margin-top:28px">
+      <h2>Social & Contact</h2>
+      <p class="muted">Connect with the Chairman or the firm via these channels.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+        <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer noopener" class="btn" style="background:#0A66C2;color:#fff"><i class="fab fa-linkedin"></i>&nbsp;LinkedIn</a>
+        <a href="https://twitter.com/" target="_blank" rel="noreferrer noopener" class="btn" style="background:#1DA1F2;color:#fff"><i class="fab fa-x-twitter"></i>&nbsp;Twitter</a>
+        <a href="mailto:chairman@bmsolicitors.example" class="btn" style="background:var(--navy);color:#fff"><i class="fa-solid fa-envelope"></i>&nbsp;Email</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Simple reveal on scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting) e.target.classList.add('visible');
+      });
+    },{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(s=>io.observe(s));
+
+    // Make timeline alternate on wide screens
+    function alternateTimeline(){
+      const milestones = document.querySelectorAll('.timeline .milestone');
+      milestones.forEach((m,i)=>{
+        m.style.flexDirection = 'row';
+        m.style.display = 'block';
+        if(window.innerWidth>900){
+          // positioning of year already absolute; keep vertical order — visual alternation is subtle here
+          if(i%2===1){ m.style.transform = 'translateX(24px)'; }
+        } else { m.style.transform = 'none'; }
+      });
+    }
+    window.addEventListener('resize', alternateTimeline);
+    alternateTimeline();
+  </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BM's Assistant — Embeddable Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --black:#111111;--muted:#6b7280;--bot-bg:#F3F4F6;--user-bg:#DFF3F1;--accent:#C9A84C;--white:#ffffff;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial;background:transparent}
+
+    /* Floating launcher */
+    .chat-launcher{position:fixed;right:18px;bottom:18px;z-index:9999}
+    .launcher-btn{width:64px;height:64px;border-radius:999px;background:var(--black);display:grid;place-items:center;border:3px solid rgba(0,0,0,0.6);cursor:pointer;box-shadow:0 10px 30px rgba(4,4,8,0.3);transition:transform .18s}
+    .launcher-btn:hover{transform:translateY(-4px)}
+    .launcher-logo{width:40px;height:40px;border-radius:10px;object-fit:cover}
+
+    /* Chat window */
+    .chat-window{position:fixed;right:18px;bottom:92px;width:360px;height:500px;background:var(--white);border-radius:14px;box-shadow:0 20px 60px rgba(2,6,23,0.35);overflow:hidden;display:flex;flex-direction:column;transform:translateY(12px) scale(.98);opacity:0;pointer-events:none}
+    .chat-window.open{transform:none;opacity:1;pointer-events:auto;animation:slideUp .28s cubic-bezier(.2,.9,.2,1)}
+    @keyframes slideUp{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+
+    /* Header */
+    .chat-header{background:var(--black);color:var(--white);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .chat-header .left{display:flex;gap:10px;align-items:center}
+    .chat-header img.logo{width:36px;height:36px;border-radius:8px;object-fit:cover}
+    .chat-title{font-weight:700}
+    .chat-sub{font-size:12px;color:var(--muted)}
+    .chat-header .actions{display:flex;gap:8px;align-items:center}
+    .wa-link{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:8px;background:#25D366;color:#fff;text-decoration:none}
+    .close-btn{background:transparent;border:0;color:#fff;font-size:18px;cursor:pointer}
+
+    /* Body */
+    .chat-body{flex:1;background:var(--bot-bg);padding:12px;overflow:auto;scroll-behavior:smooth}
+    .messages{display:flex;flex-direction:column;gap:10px;}
+
+    /* bubbles */
+    .bubble{max-width:82%;padding:10px 12px;border-radius:12px;box-shadow:0 8px 20px rgba(2,6,23,0.06);white-space:pre-wrap}
+    .bubble.bot{background:var(--white);align-self:flex-start;color:#111;border-bottom-left-radius:6px}
+    .bubble.user{background:var(--user-bg);align-self:flex-end;color:#021; border-bottom-right-radius:6px}
+
+    /* suggestion buttons */
+    .suggestions{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0}
+    .suggest-btn{border:1px solid #e6e8eb;background:transparent;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}
+
+    /* footer */
+    .chat-footer{padding:10px 12px;border-top:1px solid #efefef;background:#ffffff;display:flex;flex-direction:column;gap:8px}
+    .typing{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+    .dot{width:7px;height:7px;background:#cbd5e1;border-radius:50%;animation:blink 1s infinite}
+    .dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+    @keyframes blink{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+
+    .input-row{display:flex;align-items:center;gap:8px}
+    .input-row input{flex:1;border-radius:999px;border:1px solid #e5e7eb;padding:8px 12px;font-size:13px;outline:none}
+    .input-row input:focus{border-color:var(--accent);box-shadow:0 0 0 1px rgba(201,168,76,0.4)}
+    .send-btn{border:none;border-radius:999px;background:var(--black);color:#fff;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+    .send-btn svg{width:14px;height:14px}
+    .send-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+    /* mobile adjustments keep it small */
+    @media(max-width:420px){
+      .chat-window{right:10px;bottom:82px;width:92vw;height:72vh;border-radius:12px}
+      .launcher-btn{right:12px;bottom:12px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-launcher">
+  <div class="chat-window" id="bm-chat-window" aria-hidden="true">
+    <div class="chat-header">
+      <div class="left">
+        <img src="imports/image-2.png" class="logo" alt="BM"/>
+        <div>
+          <div class="chat-title">BM's Assistant</div>
+          <div class="chat-sub">Online • Typically replies instantly</div>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="wa-link" id="wa-link" href="https://wa.me/923247800007" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path fill="#FFFFFF" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.149-.672.149-.198.297-.767.967-.94 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.885-.788-1.48-1.761-1.653-2.058-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.174.198-.298.297-.497.099-.198.05-.372-.025-.521-.075-.672-1.634-.921-2.218-.242-.579-.487-.48-.672-.505-.192-.02-.395-.022-.573-.022h-.006c-.198 0-.616.073-.942.372-.326.297-1.224 1.195-1.224 2.915 0 1.72 1.255 3.378 1.431 3.615.176.238 2.467 3.771 5.986 5.215.835.357 1.479.569 1.984.726.832.266 1.593.229 2.193.139.671-.099 2.065-.845 2.355-1.658.29-.813.29-1.509.203-1.659-.087-.149-.326-.238-.672-.415z"/>
+            <path fill="#FFFFFF" d="M12 0C5.374 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.917l4.497-1.495A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.268 0-2.496-.2-3.647-.574l-.262-.114-3.819 1.273 1.273-3.819-.114-.262A9.714 9.714 0 012.25 12C2.25 6.623 6.623 2.25 12 2.25S21.75 6.623 21.75 12 17.377 21.75 12 21.75z"/>
+          </svg>
+        </a>
+        <button class="close-btn" id="bm-close">✕</button>
+      </div>
+    </div>
+
+    <div class="chat-body" id="bm-body">
+      <div class="messages" id="bm-messages">
+        <!-- messages go here -->
+      </div>
+      <div id="bm-suggestions" class="suggestions" aria-hidden="true">
+        <!-- suggestion buttons injected here -->
+      </div>
+    </div>
+
+    <div class="chat-footer" id="bm-footer" aria-hidden="true">
+      <div id="bm-typing" class="typing" style="display:none">
+        <span>BM Solicitors is typing</span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="input-row">
+        <input id="bm-input" type="text" placeholder="Type your question or choose a suggestion…" autocomplete="off" />
+        <button id="bm-send" class="send-btn" disabled>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M3.4 20.6l17.3-7.4c.8-.3.8-1.5 0-1.8L3.4 4c-.7-.3-1.5.4-1.3 1.2L4 11.2c.1.3.3.5.6.6l5 1.2-5 1.2c-.3.1-.5.3-.6.6l-1.9 6C1.9 20.2 2.7 20.9 3.4 20.6z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button class="launcher-btn" id="bm-launch">
+    <!-- robot SVG placeholder -->
+    <svg width="40" height="40" viewBox="0 0 24 24" class="launcher-logo" xmlns="http://www.w3.org/2000/svg" fill="none"><rect width="24" height="24" rx="4" fill="#111"/><path d="M7 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="5" width="8" height="3" rx="1" fill="#fff"/><circle cx="9.2" cy="12.6" r=".8" fill="#fff"/><circle cx="14.8" cy="12.6" r=".8" fill="#fff"/></svg>
+  </button>
+</div>
+
+<script>
+(function(){
+  // Elements
+  const launch = document.getElementById('bm-launch');
+  const win = document.getElementById('bm-chat-window');
+  const closeBtn = document.getElementById('bm-close');
+  const messagesEl = document.getElementById('bm-messages');
+  const suggestionsEl = document.getElementById('bm-suggestions');
+  const typingEl = document.getElementById('bm-typing');
+  const bodyEl = document.getElementById('bm-body');
+  const inputEl = document.getElementById('bm-input');
+  const sendBtn = document.getElementById('bm-send');
+
+  // Knowledge base & flows
+  const mainQuestions = [
+    {key:'about', label:'🏢 About BM Solicitors'},
+    {key:'services', label:'🛠️ Our Services'},
+    {key:'location', label:'📍 Office Location'},
+    {key:'contact', label:'📞 Contact & WhatsApp'},
+    {key:'hours', label:'⏰ Opening Hours'}
+  ];
+
+  const related = {
+    about:['founded','location','awards'],
+    services:['pricing','delivery','custom'],
+    team:['chairman','teamsize','join'],
+    contact:['email','phone','hours'],
+    careers:['apply','openings','internship'],
+    chairman:['background','experience','contact'],
+    pricing:['discounts','estimates','contact'],
+    custom:['process','timeline','contact']
+  };
+
+  const kb = {
+    about: 'We are BM Solicitors, providing expert legal services across corporate, property, family, and litigation practice areas.',
+    services: 'Key services include:\n• Corporate & Commercial Law\n• Property & Conveyancing\n• Litigation & Dispute Resolution\n• Family & Personal Law\n• Regulatory & Compliance Advisory\nIf you tell us your matter (for example visa, property, business, family), we can guide you further.',
+    team: 'Our team contains skilled solicitors and advisors led by our Chairman.',
+    contact: 'You can reach BM Solicitors here:\n\nAddress: Punjab, Pakistan\nPhone: +92 324 7800007\nWhatsApp: +92 324 7800007\nEmail: info@bmsolicitors.example',
+    careers: 'We hire legal professionals and support staff. Send your CV to careers@bmsolicitors.example.',
+    chairman: 'Chairman: Syed Shabi ul Hassan Bukhari — seasoned legal professional with decades of experience.',
+    pricing: 'Our fees are matter‑based and transparent. After understanding your issue we provide a clear estimate before starting work.',
+    custom: 'Yes, we build custom legal strategies and documentation tailored to each client’s needs.',
+    founded: 'Founded with a mission to provide dependable legal services across sectors.',
+    location: 'Our main office is located in Punjab, Pakistan. For the live map and exact pin, please check the Contact/Location section on our website or request the Google Maps link on WhatsApp.',
+    awards: 'Recognized for client service and successful project advisory.',
+    delivery: 'We follow clear timelines and keep clients updated throughout the project lifecycle.',
+    email: 'info@bmsolicitors.example',
+    phone: '+92 324 7800007',
+    hours: 'Office hours: Monday to Friday, 9:00 AM – 6:00 PM (local time).',
+    apply: 'Send your CV to careers@bmsolicitors.example or apply via the Careers page on our website.',
+    openings: 'Openings vary; contact HR or email careers@bmsolicitors.example for current positions.',
+    internship: 'We offer internships from time to time; email internships@bmsolicitors.example with your CV and area of interest.'
+  };
+
+  // Helpers
+  function el(html){ const d=document.createElement('div'); d.innerHTML=html; return d.firstElementChild; }
+  function scrollToBottom(){ bodyEl.scrollTop = bodyEl.scrollHeight; }
+
+  function renderSuggestions(keys){
+    suggestionsEl.innerHTML='';
+    if(!keys || !keys.length) return;
+    suggestionsEl.setAttribute('aria-hidden','false');
+    keys.forEach(k=>{
+      const btn = document.createElement('button');
+      btn.className = 'suggest-btn';
+      const label = (mainQuestions.find(m=>m.key===k)|| mainQuestions.find(m=>m.key===k) || {label: (kb[k] ? k : k)}).label || (kb[k]||k);
+      // if key exists in mainQuestions use the label, else make readable
+      btn.textContent = (mainQuestions.find(m=>m.key===k)? mainQuestions.find(m=>m.key===k).label : (k.charAt(0).toUpperCase()+k.slice(1)));
+      btn.addEventListener('click', ()=>{
+        handleUserChoice(k, btn.textContent);
+      });
+      suggestionsEl.appendChild(btn);
+    });
+  }
+
+  function showMainSuggestions(){
+    renderSuggestions(mainQuestions.map(m=>m.key));
+  }
+
+  function addMessage(from, text){
+    const b = document.createElement('div');
+    b.className = 'bubble '+(from==='user'?'user':'bot');
+    b.textContent = text;
+    messagesEl.appendChild(b);
+    scrollToBottom();
+  }
+
+  function showTyping(on=true){
+    typingEl.style.display = on? 'inline-flex':'none';
+    scrollToBottom();
+  }
+
+  function getBestKeyFromText(text){
+    const t = text.toLowerCase();
+    if(t.includes('service') || t.includes('help') || t.includes('case')) return 'services';
+    if(t.includes('where') || t.includes('location') || t.includes('address') || t.includes('office')) return 'location';
+    if(t.includes('whatsapp') || t.includes('phone') || t.includes('contact') || t.includes('number') || t.includes('call')) return 'contact';
+    if(t.includes('time') || t.includes('open') || t.includes('hour')) return 'hours';
+    if(t.includes('fee') || t.includes('price') || t.includes('charges') || t.includes('cost')) return 'pricing';
+    if(t.includes('job') || t.includes('career') || t.includes('intern')) return 'careers';
+    if(t.includes('chairman') || t.includes('owner') || t.includes('founder')) return 'chairman';
+    if(t.includes('about') || t.includes('firm') || t.includes('company')) return 'about';
+    return null;
+  }
+
+  function handleFreeText(text){
+    const key = getBestKeyFromText(text);
+    showTyping(true);
+    setTimeout(()=>{
+      showTyping(false);
+      if(key && kb[key]){
+        addMessage('bot', kb[key]);
+      } else {
+        addMessage('bot', 'Thank you for your message. A member of the BM Solicitors team will review it and get back to you. For urgent queries, please call or WhatsApp us on +92 324 7800007.');
+      }
+      setTimeout(()=> showMainSuggestions(), 300);
+    }, 1000 + Math.random()*400);
+  }
+
+  function handleUserChoice(key, label){
+    // move clicked question as user bubble
+    suggestionsEl.innerHTML=''; suggestionsEl.setAttribute('aria-hidden','true');
+    addMessage('user', label);
+    // after 1s show typing, then bot reply
+    showTyping(true);
+    setTimeout(()=>{
+      showTyping(false);
+      const answer = kb[key] || 'Sorry, I do not have details on that right now.';
+      addMessage('bot', answer);
+      // after reply show related if available else main
+      const rel = related[key] || [];
+      setTimeout(()=>{
+        if(rel.length){
+          renderSuggestions(rel);
+        } else {
+          showMainSuggestions();
+        }
+      }, 300);
+    }, 1000 + Math.random()*400);
+  }
+
+  // Open behavior: show initial suggestions immediately
+  function openChat(){
+    win.classList.add('open'); win.setAttribute('aria-hidden','false');
+    messagesEl.innerHTML='';
+    addMessage('bot',"👋 Welcome to BM Solicitors.\n\nYou can ask about our services, office location, pricing, or any legal matter. You can also tap one of the questions below to get started.");
+    showMainSuggestions();
+    inputEl.focus();
+  }
+  function closeChat(){ win.classList.remove('open'); win.setAttribute('aria-hidden','true'); }
+
+  // Hooks
+  launch.addEventListener('click', ()=>{
+    if(win.classList.contains('open')) closeChat(); else openChat();
+  });
+  closeBtn.addEventListener('click', ()=> closeChat());
+
+  // Input handlers
+  inputEl.addEventListener('input', ()=>{
+    const hasText = inputEl.value.trim().length>0;
+    sendBtn.disabled = !hasText;
+  });
+
+  function sendCurrentInput(){
+    const text = inputEl.value.trim();
+    if(!text) return;
+    addMessage('user', text);
+    inputEl.value = '';
+    sendBtn.disabled = true;
+    handleFreeText(text);
+  }
+
+  sendBtn.addEventListener('click', sendCurrentInput);
+  inputEl.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      sendCurrentInput();
+    }
+  });
+
+  // Accessibility: close on Escape
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeChat(); });
+
+  // Prevent clicks inside from bubbling
+  win.addEventListener('click', (e)=> e.stopPropagation());
+  document.body.addEventListener('click', ()=> { if(win.classList.contains('open')) closeChat(); });
+
+  // stop body clicks when clicking launcher or window
+  document.querySelector('.chat-launcher').addEventListener('click', (e)=>e.stopPropagation());
+
+  // initialize: nothing open
+  closeChat();
+})();
+</script>
+
+</body>
+</html>

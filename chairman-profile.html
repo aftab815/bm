@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chairman Profile — Syed Shabi ul Hassan Bukhari</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f8fb;--card:#ffffff;--muted:#6b7280;--accent:#0f172a;--gold:#c9a96e}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--accent);-webkit-font-smoothing:antialiased}
+    .page{min-height:100vh;display:grid;place-items:center;padding:40px}
+    .container{width:100%;max-width:980px;background:linear-gradient(180deg,rgba(255,255,255,0.85),#fff);box-shadow:0 10px 40px rgba(16,24,40,0.08);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:360px 1fr}
+    @media(max-width:880px){.container{grid-template-columns:1fr;gap:0}}
+
+    /* Left column */
+    .left{padding:32px;background:linear-gradient(180deg,#fbfbfc,#ffffff);display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+    .photo{width:220px;height:220px;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px rgba(9,10,25,0.06);border:6px solid rgba(201,169,110,0.06);background:#e6eef8;display:grid;place-items:center}
+    .photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .name{font-family:'Playfair Display',serif;font-size:20px;color:var(--accent);font-weight:700}
+    .role{color:var(--muted);font-weight:600;margin-top:4px}
+    .contact{margin-top:8px;display:flex;flex-direction:column;gap:6px;width:100%}
+    .contact a{color:var(--accent);text-decoration:none;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.04);background:linear-gradient(90deg,rgba(201,169,110,0.04),transparent);font-weight:600}
+
+    /* Right column */
+    .right{padding:32px}
+    .section{margin-bottom:20px}
+    .h{display:flex;align-items:center;gap:12px}
+    .h h2{margin:0;font-family:'Playfair Display',serif;font-size:18px;color:var(--accent)}
+    .h p{margin:0;color:var(--muted);font-size:14px}
+
+    .bio{color:#1f2937;line-height:1.6}
+    .meta{display:flex;gap:24px;margin-top:14px;flex-wrap:wrap}
+    .meta-item{background:linear-gradient(180deg,rgba(243,244,246,0.9),#fff);padding:10px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.04);min-width:160px}
+    .meta-item h4{margin:0;font-size:13px;color:var(--muted)}
+    .meta-item p{margin:6px 0 0;font-weight:700;color:var(--accent)}
+
+    .achievements{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .ach{background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(15,23,42,0.04)}
+    .ach h5{margin:0;font-size:13px;color:var(--muted)}
+    .ach p{margin:8px 0 0;font-weight:600;color:var(--accent);font-size:14px}
+
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn.primary{background:var(--gold);color:#071322}
+    .btn.ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--accent)}
+
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px;background:transparent;border-top:1px dashed rgba(15,23,42,0.02)}
+
+    /* small helpers */
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <!--
+    NOTE: Save the attached image as `chairman.jpg` in the same folder as this file
+    (c:\Users\usa\Downloads\BM_solicitorss-main\BM_solicitorss-main\chairman.jpg)
+    If you prefer a different filename, update the <img src="..."> below accordingly.
+  -->
+
+  <div class="page">
+    <div class="container" role="main">
+      <div class="left">
+        <div class="photo" aria-hidden="false">
+          <img src="chairman.jpg" alt="Chairman photo — Syed Shabi ul Hassan Bukhari" id="chair-img">
+        </div>
+        <div class="name">Syed Shabi ul Hassan Bukhari</div>
+        <div class="role">Chairman</div>
+
+        <div class="contact">
+          <a href="mailto:chairman@bmsolicitors.example" title="Email">chairman@bmsolicitors.example</a>
+          <a href="tel:+923247800007" title="Call">+92 324 7800007</a>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px;line-height:1.45">Based in Punjab, Pakistan — leading the firm's strategic vision and client relations.</div>
+      </div>
+
+      <div class="right">
+        <div class="section">
+          <div class="h"><h2>About</h2><p class="muted">Professional summary</p></div>
+          <div class="bio">Syed Shabi ul Hassan Bukhari is the Chairman of BM Solicitor (Private) Limited. He brings decades of leadership experience in legal consultancy, project management, and institutional development. He is committed to delivering strategic legal advice, ensuring compliance, and representing client interests with integrity and diligence.</div>
+
+          <div class="meta">
+            <div class="meta-item"><h4>Location</h4><p>Punjab, Pakistan</p></div>
+            <div class="meta-item"><h4>Experience</h4><p>20+ years</p></div>
+            <div class="meta-item"><h4>Practice Areas</h4><p>Corporate · Property · Contracts</p></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="h"><h2>Notable achievements</h2><p class="muted">Selected highlights</p></div>
+          <div class="achievements">
+            <div class="ach"><h5>Strategic leadership</h5><p>Guided large-scale institutional projects</p></div>
+            <div class="ach"><h5>Successful litigation</h5><p>High-profile property & corporate cases</p></div>
+            <div class="ach"><h5>Advisory roles</h5><p>Trusted advisor to corporate clients</p></div>
+            <div class="ach"><h5>Capacity building</h5><p>Led professional training initiatives</p></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="h"><h2>Profile & CV</h2><p class="muted">Download or contact</p></div>
+          <div class="actions">
+            <button class="btn primary" onclick="downloadVCard()">Contact / vCard</button>
+            <button class="btn ghost" onclick="downloadCV()">Download CV</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="h"><h2>Message</h2><p class="muted">Send a quick message</p></div>
+          <form id="contactForm" onsubmit="event.preventDefault(); sendMessage();">
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="msgName" placeholder="Your name" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06)" required>
+              <input id="msgEmail" placeholder="Email" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06)" required>
+            </div>
+            <textarea id="msgBody" rows="4" placeholder="Message" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);resize:vertical" required></textarea>
+            <div style="margin-top:8px"><button class="btn primary" type="submit">Send Message</button></div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <footer>BM Solicitor (Private) Limited — Professional profile page</footer>
+  </div>
+
+  <script>
+    function downloadVCard(){
+      const vcard = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        'N:Bukhari;Syed Shabi ul Hassan',
+        'FN:Syed Shabi ul Hassan Bukhari',
+        'TITLE:Chairman',
+        'ORG:BM Solicitor (Private) Limited',
+        'TEL;TYPE=WORK,VOICE:+92 324 7800007',
+        'EMAIL:chairman@bmsolicitors.example',
+        'END:VCARD'
+      ].join('\r\n');
+      const blob = new Blob([vcard], {type:'text/vcard'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'Syed_Shabi_ul_Hassan_Bukhari.vcf'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    function downloadCV(){
+      // Placeholder: in a real site this would link to a stored PDF
+      alert('Download CV: please add a CV file to the site and update this button to link to it.');
+    }
+
+    function sendMessage(){
+      const name = document.getElementById('msgName').value.trim();
+      const email = document.getElementById('msgEmail').value.trim();
+      const body = document.getElementById('msgBody').value.trim();
+      if(!name||!email||!body){ alert('Please fill all fields'); return }
+      // For demo, we'll just show a success message. Replace with real form submission.
+      alert('Message sent — thank you, ' + name + '. We will contact you at ' + email + '.');
+      document.getElementById('contactForm').reset();
+    }
+  </script>
+</body>
+</html>

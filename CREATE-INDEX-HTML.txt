@@ -1,0 +1,28 @@
+⚠️ IMPORTANT: Create index.html file manually
+
+Copy the code below and save it as "index.html" in the root directory
+(same folder where package.json is located):
+
+================================================================================
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BM Solicitor (Pvt) Limited - Professional legal services registered with Punjab Bar Council" />
+    <meta name="keywords" content="BM Solicitor, law firm, legal services, Pakistan, Punjab" />
+    <title>BM SOLICITOR (PVT) LIMITED - Professional Legal Services</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+================================================================================
+
+After creating index.html, run:
+1. pnpm install
+2. pnpm run dev
